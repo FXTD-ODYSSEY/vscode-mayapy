@@ -4,6 +4,8 @@
 
 import * as vscode from 'vscode';
 
+
+
 export class TimeUtils {
 	public static getTime(): String {
 		return new Date()
@@ -46,24 +48,20 @@ export class Logger {
 		let util = require('util');
 		let time = TimeUtils.getTime();
 		if (!log || !log.split) return;
-		this._outputPanel.appendLine(util.format('mayapy [%s][%s]\t %s', time, type, log));
+		this._outputPanel.appendLine(util.format('Maya Dev [%s][%s]\t %s', time, type, log));
 	}
 }
 
 export function activate(context: vscode.ExtensionContext) {
 
-	let outputPanel = vscode.window.createOutputChannel('mayapy');
+	let outputPanel = vscode.window.createOutputChannel('Maya Dev');
 	Logger.registerOutputPanel(outputPanel);
 
 	// NOTE Python Extension API 测试
-	let pythonExt = vscode.extensions.getExtension('ms-python.python');
+	// let pythonExt = vscode.extensions.getExtension('ms-python.python');
 	// let api = pythonExt.exports;
-	let pythonConfig = vscode.workspace.getConfiguration("python")
-	let pythonPath = pythonConfig.get("pythonPath")
 
-	Logger.info(`pythonPath: ${pythonPath}`);
-
-
+	// Logger.info(`pythonExt: ${Object.keys(pythonExt)}`);
 	// Logger.info(`pythonExt.id: ${pythonExt.id}`);
 	// Logger.info(`pythonExt.extensionPath: ${pythonExt.extensionPath}`);
 	// Logger.info(`api: ${Object.keys(api)}`);
@@ -93,5 +91,18 @@ export function activate(context: vscode.ExtensionContext) {
 	// 	}
 	// 	Logger.info(`pythonPath : ${pythonPath}`); 
 	// })
+
+
+	// NOTE 初始化插件的时候 
+
+
+	// // NOTE 获取 MEL 数据存放到数组当中
+	// let mel_completions: Array<vscode.CompletionItem> = [];
+	// mel_data.forEach(this_item => {
+	// 	let item = new vscode.CompletionItem(this_item['trigger'], vscode.CompletionItemKind.Function);
+	// 	item.detail = this_item['trigger'];
+	// 	item.documentation = this_item['comment'];
+	// 	mel_completions.push(item);
+	// });
 
 }
