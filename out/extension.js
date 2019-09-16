@@ -82,6 +82,7 @@ function activate(context) {
             Logger.info(`type:${activeDebugSession.type}`);
             Logger.info(`id:${activeDebugSession.id}`);
             Logger.info(`workspaceFolder:${activeDebugSession.workspaceFolder}`);
+            Logger.info(`workspaceFolder:${Object.keys(activeDebugSession.workspaceFolder)}`);
             Logger.info(`configuration:${activeDebugSession.configuration}`);
             Logger.info(`configuration:${Object.keys(activeDebugSession.configuration)}`);
             Logger.info(`=======================================================`);
@@ -91,6 +92,11 @@ function activate(context) {
             Logger.info(`type:${configuration.type}`);
             Logger.info(`pythonPath:${configuration.pythonPath}`);
             Logger.info(`program:${configuration.program}`);
+            Logger.info(`debugOptions:${configuration.debugOptions}`);
+            Logger.info(`cwd:${configuration.cwd}`);
+            Logger.info(`env:${configuration.env}`);
+            Logger.info(`console:${configuration.console}`);
+            Logger.info(`envFile:${configuration.envFile}`);
         }
         // Logger.info(`rootPath:${vscode.workspace.rootPath}`);
         // Logger.info(`workspaceFile:${vscode.workspace
@@ -126,9 +132,17 @@ reload(${file_name})
                 if (success) {
                     vscode.window.showTextDocument(document);
                     Logger.info(`open document`);
-                    // TODO 激活 Debug 
+                    let debug_check = [];
+                    // TODO 激活 Debug 模式
                     if (vscode.debug.activeDebugSession) {
-                        vscode.commands.executeCommand("workbench.action.debug.stop");
+                        // NOTE 如果符合 说明已经链接了 ptvsd
+                        if (activeDebugSession.type === "python" &&
+                            activeDebugSession.configuration.cwd == path.dirname(uri.fsPath) &&
+                            activeDebugSession.configuration.request == "attach") {
+                        }
+                        else {
+                            vscode.commands.executeCommand("workbench.action.debug.stop");
+                        }
                     }
                     else {
                         vscode.commands.executeCommand("workbench.action.debug.start");

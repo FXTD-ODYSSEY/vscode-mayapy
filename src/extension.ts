@@ -69,14 +69,15 @@ export function activate(context: vscode.ExtensionContext) {
 
 	let ptvsdPath: string = path.join(path.dirname(__dirname), "py")
 
-	const debug_py = vscode.commands.registerCommand('mayapy.debugPythonFile', async (uri:vscode.Uri) => {
+	const debug_py = vscode.commands.registerCommand('mayapy.debugPythonFile', async (uri: vscode.Uri) => {
 		let activeDebugSession = vscode.debug.activeDebugSession
-		if (activeDebugSession){
+		if (activeDebugSession) {
 			Logger.info(`activeDebugSession:${activeDebugSession}`);
 			Logger.info(`name:${activeDebugSession.name}`);
 			Logger.info(`type:${activeDebugSession.type}`);
 			Logger.info(`id:${activeDebugSession.id}`);
 			Logger.info(`workspaceFolder:${activeDebugSession.workspaceFolder}`);
+			Logger.info(`workspaceFolder:${Object.keys(activeDebugSession.workspaceFolder)}`);
 			Logger.info(`configuration:${activeDebugSession.configuration}`);
 			Logger.info(`configuration:${Object.keys(activeDebugSession.configuration)}`);
 			Logger.info(`=======================================================`);
@@ -86,6 +87,11 @@ export function activate(context: vscode.ExtensionContext) {
 			Logger.info(`type:${configuration.type}`);
 			Logger.info(`pythonPath:${configuration.pythonPath}`);
 			Logger.info(`program:${configuration.program}`);
+			Logger.info(`debugOptions:${configuration.debugOptions}`);
+			Logger.info(`cwd:${configuration.cwd}`);
+			Logger.info(`env:${configuration.env}`);
+			Logger.info(`console:${configuration.console}`);
+			Logger.info(`envFile:${configuration.envFile}`);
 		}
 
 		// Logger.info(`rootPath:${vscode.workspace.rootPath}`);
@@ -93,11 +99,11 @@ export function activate(context: vscode.ExtensionContext) {
 		// 	.workspaceFile}`);
 		// Logger.info(`uri:${uri.fsPath}`);
 		// Logger.info(`basename:${path.basename(uri.fsPath, ".py")}`);
-		
-		// vscode.debug.startDebugging()
-		
 
-		let file_name:string = path.basename(uri.fsPath, ".py");
+		// vscode.debug.startDebugging()
+
+
+		let file_name: string = path.basename(uri.fsPath, ".py");
 
 		const newFile = vscode.Uri.parse('untitled:' + path.join(vscode.workspace.rootPath, 'debug.py'));
 		vscode.workspace.openTextDocument(newFile).then(document => {
@@ -123,16 +129,25 @@ import ${file_name}
 reload(${file_name})
 			`;
 
+
 			edit.insert(newFile, new vscode.Position(0, 0), py_code);
 			return vscode.workspace.applyEdit(edit).then(success => {
 				if (success) {
 					vscode.window.showTextDocument(document);
 					Logger.info(`open document`);
-					
-					// TODO 激活 Debug 
-					if (vscode.debug.activeDebugSession){
-						vscode.commands.executeCommand("workbench.action.debug.stop")
-					}else{
+					let debug_check: Array<boolean> = []
+					// TODO 激活 Debug 模式
+					if (vscode.debug.activeDebugSession) {
+						// NOTE 如果符合 说明已经链接了 ptvsd
+						if (activeDebugSession.type === "python" && 
+							activeDebugSession.configuration.cwd == path.dirname(uri.fsPath) &&
+							activeDebugSession.configuration.request == "attach"){
+
+							}else{
+								vscode.commands.executeCommand("workbench.action.debug.stop")
+							}
+						
+					} else {
 						vscode.commands.executeCommand("workbench.action.debug.start")
 					}
 
