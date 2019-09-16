@@ -47,7 +47,8 @@
 		"Other"
 	],
 	"activationEvents": [
-		"*"
+		"*",
+		"onCommand:mayapy.debugPythonFile"
 	],
 	"main": "./out/extension.js",
 	"devDependencies": {
@@ -57,6 +58,13 @@
 		"@types/vscode": "^1.32.0"
 	},
 	"contributes": {
+		"commands": [
+			{
+				"command": "mayapy.debugPythonFile",
+				"title": "Debug Current Python File with Maya",
+				"category": "Maya"
+			}
+		],
 		"debuggers": [
 			{
 				"type": "maya",
@@ -71,6 +79,9 @@
 							"name": "${1:Maya Python Debugger : Remote Attach}",
 							"port": "^${2:5678}",
 							"host": "${3:localhost}",
+							"env": {
+								"VSCODE_DEBUG_MODE": "true"
+							},
 							"pathMappings": [
 								{
 									"localRoot": "^\"\\${fileDirname}\"",
@@ -81,7 +92,22 @@
 					}
 				]
 			}
-		]
+		],
+		"menus": {
+			"editor/context": [
+				{
+					"command": "mayapy.debugPythonFile",
+					"when": "editorTextFocus && editorLangId == 'python'",
+					"group": "navigation"
+				}
+			],
+			"commandPalette": [
+				{
+					"command": "mayapy.debugPythonFile",
+					"when": "false"
+				}
+			]
+		}
 	},
 	"extensionDependencies": [
 		"ms-python.python",
