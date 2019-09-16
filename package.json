@@ -56,9 +56,35 @@
 		"typescript": "^3.5.1",
 		"@types/vscode": "^1.32.0"
 	},
+	"contributes": {
+		"debuggers": [
+			{
+				"type": "maya",
+				"label": "Maya Debug",
+				"configurationSnippets": [
+					{
+						"label": "Maya Python Debugger : Remote Attach",
+						"description": "A debug configuration for attaching to a running maya program.",
+						"body": {
+							"type": "python",
+							"request": "attach",
+							"name": "${1:Maya Python Debugger : Remote Attach}",
+							"port": "^${2:5678}",
+							"host": "${3:localhost}",
+							"pathMappings": [
+								{
+									"localRoot": "^\"\\${fileDirname}\"",
+									"remoteRoot": "^\"\\${fileDirname}\""
+								}
+							]
+						}
+					}
+				]
+			}
+		]
+	},
 	"extensionDependencies": [
 		"ms-python.python",
-		"saviof.mayacode",
-		"VisualStudioExptTeam.vscodeintellicode"
+		"saviof.mayacode"
 	]
 }

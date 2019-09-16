@@ -57,16 +57,13 @@ export function activate(context: vscode.ExtensionContext) {
 	Logger.registerOutputPanel(outputPanel);
 
 	let pythonConfig = vscode.workspace.getConfiguration("python")
-	let pythonPath = pythonConfig.get("pythonPath")
 
 	// NOTE 添加 python 自动补全路径
 	let extraPaths: Array<string> = pythonConfig.get("autoComplete.extraPaths")
-	let completionPath: string = path.join(path.dirname(__dirname), "mayaSDK")
-	if (!extraPaths.includes(completionPath)){
+	let completionPath: string = path.join(path.dirname(__dirname), "py", "mayaSDK")
+	if (!extraPaths.includes(completionPath)) {
 		extraPaths.splice(0, 0, completionPath);
-		pythonConfig.update("autoComplete.extraPaths", extraPaths,true)
+		pythonConfig.update("autoComplete.extraPaths", extraPaths, true)
 	}
-
-
 
 }
