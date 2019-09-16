@@ -1,0 +1,5 @@
+registeredFuncs = set()
+
+customInstances = {}
+
+

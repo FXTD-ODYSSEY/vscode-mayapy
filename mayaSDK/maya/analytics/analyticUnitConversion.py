@@ -1,0 +1,101 @@
+from maya.analytics.decorators import makeAnalytic
+from maya.analytics.decorators import addMethodDocs
+from maya.analytics.BaseAnalytic import BaseAnalytic
+from maya.analytics.decorators import addHelp
+
+class analyticUnitConversion(BaseAnalytic):
+    """
+    This analytic collects the types of nodes before and after a unit conversion node.
+    
+    The output consists of a dictionary entry with a before and after section.
+    The 'before' section contains node type/count pairs indicating how many times
+    they appear before a unit conversion node. The 'after' section contains node
+    type/count pairs indicating how many times they appear after a unit conversion
+    node. ('Before' and 'after' refer to upstream and downstream connections
+    respectively.) The 'conversion' section contains counts of the unit conversion
+    nodes that use various conversion factors.
+    
+        "before" : {
+            "animCurveTL" : 3,
+            "animCurveTU" : 1
+        },
+        "after" : {
+            "transform" : 3,
+            "mesh" : 1
+        }
+        "conversion" : {
+            1.2345 : 2,
+            7.123 : 2
+        }
+    
+    If the 'details' option is used then the set of all unit conversion connections
+    is output as a dictionary where the key is the unit conversion node type and
+    the values are lists of pairs
+    
+        "details" : {
+            "unitToTimeConversion" : [
+                [ "node1.tx", "node2.input1"],
+                [ "node1.ty", "node2.input1"],
+                [ "node1.tz", "node2.input1"]
+            ],
+            "timeToUnitConversion" : [
+                [ "node1_tx", "node1.dynInput1"],
+                [ "node1_ty", "node1.dynInput2"],
+                [ "node1_tz", "node1.dynInput3"]
+            ]
+        }
+    """
+    
+    
+    
+    def run(self):
+        """
+        Run the analytic on the current scene.
+        :return: JSON results as described in the class doc
+        """
+    
+        pass
+    
+    
+    def help():
+        """
+        Call this method to print the class documentation, including all methods.
+        """
+    
+        pass
+    
+    
+    ANALYTIC_DESCRIPTION_DETAILED = 'This analytic collects the types of nodes before and after a unit conversion node.\n\nThe output consists of a dictionary entry with a before and after section.\nThe \'before\' section contains node type/count pairs indicating how many times\nthey appear before a unit conversion node. The \'after\' section contains node\ntype/count pairs indicating how many times they appear after a unit conversion\nnode. (\'Before\' and \'after\' refer to upstream and downstream connections\nrespectively.) The \'conversion\' section contains counts of the unit conversion\nnodes that use various conversion factors.\n\n    "before" : {\n        "animCurveTL" : 3,\n        "animCurveTU" : 1\n    },\n    "after" : {\n        "transform" : 3,\n        "mesh" : 1\n    }\n    "conversion" : {\n        1.2345 : 2,\n        7.123 : 2\n    }\n\nIf the \'details\' option is used then the set of all unit conversion connections\nis output as a dictionary where the key is the unit conversion node type and\nthe values are lists of pairs\n\n    "details" : {\n        "unitToTimeConversion" : [\n            [ "node1.tx", "node2.input1"],\n            [ "node1.ty", "node2.input1"],\n            [ "node1.tz", "node2.input1"]\n        ],\n        "timeToUnitConversion" : [\n            [ "node1_tx", "node1.dynInput1"],\n            [ "node1_ty", "node1.dynInput2"],\n            [ "node1_tz", "node1.dynInput3"]\n        ]\n    }'
+    
+    
+    ANALYTIC_DESCRIPTION_SHORT = []
+    
+    
+    ANALYTIC_LABEL = []
+    
+    
+    ANALYTIC_NAME = 'UnitConversion'
+    
+    
+    __fulldocs__ = 'This analytic collects the types of nodes before and after a unit conversion node.\n\nThe output consists of a dictionary entry with a before and after section.\nThe \'before\' section contains node type/count pairs indicating how many times\nthey appear before a unit conversion node. The \'after\' section contains node\ntype/count pairs indicating how many times they appear after a unit conversion\nnode. (\'Before\' and \'after\' refer to upstream and downstream connections\nrespectively.) The \'conversion\' section contains counts of the unit conversion\nnodes that use various conversion factors.\n\n    "before" : {\n        "animCurveTL" : 3,\n        "animCurveTU" : 1\n    },\n    "after" : {\n        "transform" : 3,\n        "mesh" : 1\n    }\n    "conversion" : {\n        1.2345 : 2,\n        7.123 : 2\n    }\n\nIf the \'details\' option is used then the set of all unit conversion connections\nis output as a dictionary where the key is the unit conversion node type and\nthe values are lists of pairs\n\n    "details" : {\n        "unitToTimeConversion" : [\n            [ "node1.tx", "node2.input1"],\n            [ "node1.ty", "node2.input1"],\n            [ "node1.tz", "node2.input1"]\n        ],\n        "timeToUnitConversion" : [\n            [ "node1_tx", "node1.dynInput1"],\n            [ "node1_ty", "node1.dynInput2"],\n            [ "node1_tz", "node1.dynInput3"]\n        ]\n    }\nBase class for output for analytics.\n\nThe default location for the anlaytic output is in a subdirectory\ncalled \'MayaAnalytics\' in your temp directory. You can change that\nat any time by calling set_output_directory().\n\nClass static member:\n     ANALYTIC_NAME : Name of the analytic\n\nClass members:\n     directory     : Directory the output will go to\n     is_static     : True means this analytic doesn\'t require a file to run\n     logger        : Logging object for errors, warnings, and messages\n     plug_namer    : Object creating plug names, possibly anonymous\n     node_namer    : Object creating node names, possibly anonymous\n     csv_output    : Location to store legacy CSV output\n     plug_namer    : Set by option \'anonymous\' - if True then make plug names anonymous\n     node_namer    : Set by option \'anonymous\' - if True then make node names anonymous\n     __options     : Dictionary of per-analytic options\n\n\tMethods\n\t-------\n\tdebug : Utility to standardize debug messages coming from analytics.\n\n\terror : Utility to standardize errors coming from analytics.\n\n\testablish_baseline : This is run on an empty scene, to give the analytic a chance to\n\t                     establish any baseline data it might need (e.g. the nodes in an\n\t                     empty scene could all be ignored by the analytic)\n\t                     \n\t                     Base implementation does nothing. Derived classes should call\n\t                     their super() method though, in case something does get added.\n\n\thelp : Call this method to print the class documentation, including all methods.\n\n\tjson_file : Although an analytic is free to create any set of output files it\n\t            wishes there will always be one master JSON file containing the\n\n\tlog : Utility to standardize logging messages coming from analytics.\n\n\tmarker_file : Returns the name of the marker file used to indicate that the\n\t              computation of an analytic is in progress. If this file remains\n\t              in a directory after the analytic has run that means it was\n\t              interrupted and the data is not up to date.\n\t              \n\t              This file provides a safety measure against machines going down\n\t              or analytics crashing.\n\n\tname : Get the name of this type of analytic\n\n\toption : Return TRUE if the option specified has been set on this analytic.\n\t         option: Name of option to check\n\n\toutput_files : This is used to get the list of files the analytic will generate.\n\t               There will always be a JSON file generated which contains at minimum\n\t               the timing information. An analytic should override this method only\n\t               if they are adding more output files (e.g. a .jpg file).\n\t               \n\t               This should only be called after the final directory has been set.\n\n\trun : Run the analytic on the current scene.\n\t      :return: JSON results as described in the class doc\n\n\tset_options : Modify the settings controlling the run operation of the analytic.\n\t              Override this method if your analytic has some different options\n\t              available to it, but be sure to call this parent version after since\n\t              it sets common options.\n\n\tset_output_directory : Call this method to set a specific directory as the output location.\n\t                       The special names \'stdout\' and \'stderr\' are recognized as the\n\t                       output and error streams respectively rather than a directory.\n\n\twarning : Utility to standardize warnings coming from analytics.\n'
+    
+    
+    is_static = False
+
+
+
+KEY_CONVERSION = 'conversion'
+
+KEY_ROOT = 'unitConversion'
+
+KEY_DETAILS = 'details'
+
+kAnalyticLabel = []
+
+kAnalyticDescriptionShort = []
+
+KEY_AFTER = 'after'
+
+KEY_BEFORE = 'before'
+
+
