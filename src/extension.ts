@@ -100,7 +100,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const ptvsdPath: string = path.join(path.dirname(__dirname), "py")
 		const file_name: string = path.basename(uri.fsPath, ".py");
 		const fileDirname: string = path.dirname(uri.fsPath);
-		
+
 		const config = vscode.workspace.getConfiguration('mayapy');
 		const hostname: string = config.get("mayaypy.hostname");
 		const port: number = config.get("mayaypy.port");
@@ -118,24 +118,6 @@ import ptvsd
 ptvsd.enable_attach(address=('${hostname}', ${port}), redirect_output=True)
 ptvsd.wait_for_attach()`;
 
-		const attachFile = vscode.Uri.parse('untitled:' + path.join(vscode.workspace.rootPath, 'attach.py'));
-		vscode.workspace.openTextDocument(attachFile).then(document => {
-			const edit = new vscode.WorkspaceEdit();
-
-			edit.insert(attachFile, new vscode.Position(0, 0), attach_code);
-			return vscode.workspace.applyEdit(edit).then(success => {
-				if (success) {
-					vscode.window.showTextDocument(document);
-					// NOTE 发送当前代码
-					vscode.commands.executeCommand("mayacode.sendPythonToMaya")
-					// NOTE 关闭当前打开的文件
-					vscode.commands.executeCommand("workbench.action.closeActiveEditor")
-				} else {
-					vscode.window.showInformationMessage('Debug Attaching File Error!');
-				}
-			});
-		});
-
 		let run_code: string = `
 # 加载当前文件
 current_directory = r"${fileDirname}"
@@ -145,68 +127,89 @@ if current_directory not in sys.path:
 import ${file_name}
 reload(${file_name})`;
 
-		const newFile = vscode.Uri.parse('untitled:' + path.join(vscode.workspace.rootPath, 'debug.py'));
-		vscode.workspace.openTextDocument(newFile).then(document => {
+		const attachFile = vscode.Uri.parse('untitled:' + path.join(vscode.workspace.rootPath, 'attach.py'));
+		vscode.workspace.openTextDocument(attachFile).then(document => {
 			const edit = new vscode.WorkspaceEdit();
-			
-			edit.insert(newFile, new vscode.Position(0, 0), run_code);
+
+			edit.insert(attachFile, new vscode.Position(0, 0), attach_code);
 			return vscode.workspace.applyEdit(edit).then(success => {
 				if (success) {
-					vscode.window.showTextDocument(document);
-					Logger.info(`open document`);
-					
-					let startDebugFlag = false
-					// NOTE 检查当前 Debug 状态
-					if (vscode.debug.activeDebugSession) {
-						let configuration = activeDebugSession.configuration;
-						Logger.info(`MayaDebugMode exist:${"MayaDebugMode" in configuration}`);
-						if ("MayaDebugMode" in configuration){
-							// NOTE 发送当前代码
-							vscode.commands.executeCommand("mayacode.sendPythonToMaya")
-							// NOTE 关闭当前打开的文件
-							vscode.commands.executeCommand("workbench.action.closeActiveEditor")
-						}else{
-							vscode.commands.executeCommand("workbench.action.debug.stop")
-							startDebugFlag = true;
-						}
-					} else{
-						startDebugFlag = true;
-					}
-					
-					if (startDebugFlag){
-						// NOTE 设置 Debug 设定 | 开启 Debug 模式
-						let configuration = new function () {
-							this.name = "Maya Python Debugger : Remote Attach"
-							this.type = "python"
-							this.request = "attach"
-							this.port = port
-							this.host = hostname
-							this.pathMappings = [
-								{
-									"localRoot": `${fileDirname}`,
-									"remoteRoot": `${fileDirname}`
-								}
-							]
-							this.MayaDebugMode = true
-						}
-						vscode.debug.startDebugging(undefined, configuration).then((param) => {
-
-							// NOTE 发送当前代码
-							vscode.commands.executeCommand("mayacode.sendPythonToMaya")
-							// NOTE 关闭当前打开的文件
-							vscode.commands.executeCommand("workbench.action.closeActiveEditor")
-
-						});
-					}
-
-
-					Logger.info(`close document`);
+					vscode.window.showTextDocument(document).then(() => {
+						// NOTE 发送当前代码
+						vscode.commands.executeCommand("mayacode.sendPythonToMaya")
+						// NOTE 关闭当前打开的文件
+						vscode.commands.executeCommand("workbench.action.closeActiveEditor")
+					});
 				} else {
-					vscode.window.showInformationMessage('Debug Running File Error!');
+					vscode.window.showInformationMessage('Debug Attaching File Error!');
 				}
 			});
-		});
+		}).then(() => {
 
+			const newFile = vscode.Uri.parse('untitled:' + path.join(vscode.workspace.rootPath, 'debug.py'));
+			vscode.workspace.openTextDocument(newFile).then(document => {
+				const edit = new vscode.WorkspaceEdit();
+	
+				edit.insert(newFile, new vscode.Position(0, 0), run_code);
+				return vscode.workspace.applyEdit(edit).then(success => {
+					if (success) {
+						vscode.window.showTextDocument(document);
+						Logger.info(`open document`);
+	
+						let startDebugFlag = true
+						// NOTE 检查当前 Debug 状态
+						if (vscode.debug.activeDebugSession) {
+							let configuration = activeDebugSession.configuration;
+							if ("MayaDebugMode" in configuration) {
+								startDebugFlag = false
+								// NOTE 发送当前代码
+								vscode.commands.executeCommand("mayacode.sendPythonToMaya")
+								// NOTE 关闭当前打开的文件
+								vscode.commands.executeCommand("workbench.action.closeActiveEditor")
+							} else {
+								vscode.commands.executeCommand("workbench.action.debug.stop")
+							}
+						}
+						
+						// TODO 
+						vscode.window.showInformationMessage('Debug Running File Error!');
+
+						if (startDebugFlag) {
+							// NOTE 设置 Debug 设定 | 开启 Debug 模式
+							let configuration = new function () {
+								this.name = "Maya Python Debugger : Remote Attach"
+								this.type = "python"
+								this.request = "attach"
+								this.port = port
+								this.host = hostname
+								this.pathMappings = [
+									{
+										"localRoot": `${fileDirname}`,
+										"remoteRoot": `${fileDirname}`
+									}
+								]
+								this.MayaDebugMode = true
+							}
+							vscode.debug.startDebugging(undefined, configuration).then((param) => {
+	
+								// NOTE 发送当前代码
+								vscode.commands.executeCommand("mayacode.sendPythonToMaya")
+								// NOTE 关闭当前打开的文件
+								vscode.commands.executeCommand("workbench.action.closeActiveEditor")
+	
+							});
+						}
+	
+						Logger.info(`close document`);
+	
+					} else {
+						vscode.window.showInformationMessage('Debug Running File Error!');
+					}
+	
+				});
+			});
+
+		});
 
 	});
 
