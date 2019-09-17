@@ -136,7 +136,6 @@ ptvsd.wait_for_attach()`;
 			});
 		});
 
-
 		let run_code: string = `
 # 加载当前文件
 current_directory = r"${fileDirname}"
@@ -149,7 +148,7 @@ reload(${file_name})`;
 		const newFile = vscode.Uri.parse('untitled:' + path.join(vscode.workspace.rootPath, 'debug.py'));
 		vscode.workspace.openTextDocument(newFile).then(document => {
 			const edit = new vscode.WorkspaceEdit();
-
+			
 			edit.insert(newFile, new vscode.Position(0, 0), run_code);
 			return vscode.workspace.applyEdit(edit).then(success => {
 				if (success) {

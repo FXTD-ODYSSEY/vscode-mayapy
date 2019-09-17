@@ -79,9 +79,6 @@
 							"name": "${1:Maya Python Debugger : Remote Attach}",
 							"port": "^${2:5678}",
 							"host": "${3:localhost}",
-							"env": {
-								"VSCODE_DEBUG_MODE": "true"
-							},
 							"pathMappings": [
 								{
 									"localRoot": "^\"\\${fileDirname}\"",
@@ -93,6 +90,22 @@
 				]
 			}
 		],
+		"configuration": {
+			"type": "object",
+			"title": "mayapy ptvsd configuration",
+			"properties": {
+				"mayaypy.port": {
+					"type": "integer",
+					"default": 5678,
+					"description": "The port over which to debug with ptvsd module."
+				},
+				"mayaypy.hostname": {
+					"type": "string",
+					"default": "localhost",
+					"description": "The hostname of the machine which has a ptvsd instance running."
+				}
+			}
+		},
 		"menus": {
 			"editor/context": [
 				{
