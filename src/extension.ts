@@ -4,6 +4,9 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
+import { Socket } from 'net';
+
+const net = require('net');
 
 export class TimeUtils {
 	public static getTime(): String {
@@ -56,6 +59,9 @@ export function activate(context: vscode.ExtensionContext) {
 	let outputPanel = vscode.window.createOutputChannel('mayapy');
 	Logger.registerOutputPanel(outputPanel);
 	Logger.info("activate complete !!!!!");
+	Logger.info(`socket: ${Socket}`);
+	Logger.info(`socket: ${net}`);
+	Logger.info(`socket: ${Object.keys(net)}`);
 
 	let pythonConfig = vscode.workspace.getConfiguration("python")
 
@@ -67,7 +73,6 @@ export function activate(context: vscode.ExtensionContext) {
 		pythonConfig.update("autoComplete.extraPaths", extraPaths, true)
 	}
 
-	let ptvsdPath: string = path.join(path.dirname(__dirname), "py")
 
 	const debug_py = vscode.commands.registerCommand('mayapy.debugPythonFile', async (uri: vscode.Uri) => {
 		let activeDebugSession = vscode.debug.activeDebugSession
@@ -76,8 +81,6 @@ export function activate(context: vscode.ExtensionContext) {
 			Logger.info(`name:${activeDebugSession.name}`);
 			Logger.info(`type:${activeDebugSession.type}`);
 			Logger.info(`id:${activeDebugSession.id}`);
-			Logger.info(`workspaceFolder:${activeDebugSession.workspaceFolder}`);
-			Logger.info(`workspaceFolder:${Object.keys(activeDebugSession.workspaceFolder)}`);
 			Logger.info(`configuration:${activeDebugSession.configuration}`);
 			Logger.info(`configuration:${Object.keys(activeDebugSession.configuration)}`);
 			Logger.info(`=======================================================`);
@@ -94,22 +97,16 @@ export function activate(context: vscode.ExtensionContext) {
 			Logger.info(`envFile:${configuration.envFile}`);
 		}
 
-		// Logger.info(`rootPath:${vscode.workspace.rootPath}`);
-		// Logger.info(`workspaceFile:${vscode.workspace
-		// 	.workspaceFile}`);
-		// Logger.info(`uri:${uri.fsPath}`);
-		// Logger.info(`basename:${path.basename(uri.fsPath, ".py")}`);
+		const ptvsdPath: string = path.join(path.dirname(__dirname), "py")
+		const file_name: string = path.basename(uri.fsPath, ".py");
+		const fileDirname: string = path.dirname(uri.fsPath);
+		
+		const config = vscode.workspace.getConfiguration('mayapy');
+		const hostname: string = config.get("mayaypy.hostname");
+		const port: number = config.get("mayaypy.port");
 
-		// vscode.debug.startDebugging()
-
-
-		let file_name: string = path.basename(uri.fsPath, ".py");
-
-		const newFile = vscode.Uri.parse('untitled:' + path.join(vscode.workspace.rootPath, 'debug.py'));
-		vscode.workspace.openTextDocument(newFile).then(document => {
-			const edit = new vscode.WorkspaceEdit();
-
-			let py_code: string = `
+		// NOTE Python 代码
+		const attach_code: string = `
 # 添加 ptvsd 导入路径
 import sys
 ptvsd_module = r"${ptvsdPath}"
@@ -118,49 +115,100 @@ if ptvsd_module not in sys.path:
 
 # 开启 ptvsd Debug 端口
 import ptvsd
-ptvsd.enable_attach()
+ptvsd.enable_attach(address=('${hostname}', ${port}), redirect_output=True)
+ptvsd.wait_for_attach()`;
 
-# 加载当前文件
-current_directory = r"${path.dirname(uri.fsPath)}"
-if current_directory not in sys.path:
-	sys.path.insert(0,current_directory)
+		const attachFile = vscode.Uri.parse('untitled:' + path.join(vscode.workspace.rootPath, 'attach.py'));
+		vscode.workspace.openTextDocument(attachFile).then(document => {
+			const edit = new vscode.WorkspaceEdit();
 
-import ${file_name}
-reload(${file_name})
-			`;
-
-
-			edit.insert(newFile, new vscode.Position(0, 0), py_code);
+			edit.insert(attachFile, new vscode.Position(0, 0), attach_code);
 			return vscode.workspace.applyEdit(edit).then(success => {
 				if (success) {
 					vscode.window.showTextDocument(document);
-					Logger.info(`open document`);
-					let debug_check: Array<boolean> = []
-					// TODO 激活 Debug 模式
-					if (vscode.debug.activeDebugSession) {
-						// NOTE 如果符合 说明已经链接了 ptvsd
-						if (activeDebugSession.type === "python" && 
-							activeDebugSession.configuration.cwd == path.dirname(uri.fsPath) &&
-							activeDebugSession.configuration.request == "attach"){
-
-							}else{
-								vscode.commands.executeCommand("workbench.action.debug.stop")
-							}
-						
-					} else {
-						vscode.commands.executeCommand("workbench.action.debug.start")
-					}
-
 					// NOTE 发送当前代码
 					vscode.commands.executeCommand("mayacode.sendPythonToMaya")
 					// NOTE 关闭当前打开的文件
 					vscode.commands.executeCommand("workbench.action.closeActiveEditor")
-					Logger.info(`close document`);
 				} else {
-					vscode.window.showInformationMessage('Error!');
+					vscode.window.showInformationMessage('Debug Attaching File Error!');
 				}
 			});
 		});
+
+
+		let run_code: string = `
+# 加载当前文件
+current_directory = r"${fileDirname}"
+if current_directory not in sys.path:
+	sys.path.insert(0,current_directory)
+
+import ${file_name}
+reload(${file_name})`;
+
+		const newFile = vscode.Uri.parse('untitled:' + path.join(vscode.workspace.rootPath, 'debug.py'));
+		vscode.workspace.openTextDocument(newFile).then(document => {
+			const edit = new vscode.WorkspaceEdit();
+
+			edit.insert(newFile, new vscode.Position(0, 0), run_code);
+			return vscode.workspace.applyEdit(edit).then(success => {
+				if (success) {
+					vscode.window.showTextDocument(document);
+					Logger.info(`open document`);
+					
+					let startDebugFlag = false
+					// NOTE 检查当前 Debug 状态
+					if (vscode.debug.activeDebugSession) {
+						let configuration = activeDebugSession.configuration;
+						Logger.info(`MayaDebugMode exist:${"MayaDebugMode" in configuration}`);
+						if ("MayaDebugMode" in configuration){
+							// NOTE 发送当前代码
+							vscode.commands.executeCommand("mayacode.sendPythonToMaya")
+							// NOTE 关闭当前打开的文件
+							vscode.commands.executeCommand("workbench.action.closeActiveEditor")
+						}else{
+							vscode.commands.executeCommand("workbench.action.debug.stop")
+							startDebugFlag = true;
+						}
+					} else{
+						startDebugFlag = true;
+					}
+					
+					if (startDebugFlag){
+						// NOTE 设置 Debug 设定 | 开启 Debug 模式
+						let configuration = new function () {
+							this.name = "Maya Python Debugger : Remote Attach"
+							this.type = "python"
+							this.request = "attach"
+							this.port = port
+							this.host = hostname
+							this.pathMappings = [
+								{
+									"localRoot": `${fileDirname}`,
+									"remoteRoot": `${fileDirname}`
+								}
+							]
+							this.MayaDebugMode = true
+						}
+						vscode.debug.startDebugging(undefined, configuration).then((param) => {
+
+							// NOTE 发送当前代码
+							vscode.commands.executeCommand("mayacode.sendPythonToMaya")
+							// NOTE 关闭当前打开的文件
+							vscode.commands.executeCommand("workbench.action.closeActiveEditor")
+
+						});
+					}
+
+
+					Logger.info(`close document`);
+				} else {
+					vscode.window.showInformationMessage('Debug Running File Error!');
+				}
+			});
+		});
+
+
 	});
 
 	context.subscriptions.push(debug_py);
