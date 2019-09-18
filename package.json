@@ -1,6 +1,6 @@
 {
 	"name": "mayapy",
-	"displayName": "Autodesk Maya Python Extension Pack",
+	"displayName": "Mayapy Debugger",
 	"description": "Better python intellisense and debugging for autodesk Maya",
 	"version": "1.0.0",
 	"publisher": "FXTD-Odyssey",
@@ -94,12 +94,12 @@
 			"type": "object",
 			"title": "mayapy ptvsd configuration",
 			"properties": {
-				"mayaypy.port": {
+				"mayapy.port": {
 					"type": "integer",
 					"default": 5678,
 					"description": "The port over which to debug with ptvsd module."
 				},
-				"mayaypy.hostname": {
+				"mayapy.hostname": {
 					"type": "string",
 					"default": "localhost",
 					"description": "The hostname of the machine which has a ptvsd instance running."
