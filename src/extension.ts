@@ -94,7 +94,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	function debug_ptvsd(attach_code) {
 		const attachFile = vscode.Uri.parse('untitled:' + path.join(vscode.workspace.rootPath, 'attach.py'));
-		vscode.workspace.openTextDocument(attachFile).then(document => {
+		return vscode.workspace.openTextDocument(attachFile).then(document => {
 			const edit = new vscode.WorkspaceEdit();
 
 			edit.insert(attachFile, new vscode.Position(0, 0), attach_code);
@@ -117,7 +117,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	function debug_run(run_code, port, hostname, fileDirname) {
 		const debugFile = vscode.Uri.parse('untitled:' + path.join(vscode.workspace.rootPath, 'debug.py'));
-		vscode.workspace.openTextDocument(debugFile).then(document => {
+		return vscode.workspace.openTextDocument(debugFile).then(document => {
 			const edit = new vscode.WorkspaceEdit();
 
 			edit.insert(debugFile, new vscode.Position(0, 0), run_code);
