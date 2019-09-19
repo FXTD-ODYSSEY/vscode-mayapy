@@ -20,18 +20,11 @@ add the awesome Intellisense and Debugging feature. -->
 + **Integrate the python debugger that allow you set the breakpoint to test the code in Maya**
 
     1. right click the menu item `Debug Current Python File to Maya `, if you didn't activate the command Port in Maya,it will tell you the mel command to activate it.
-    
     ![03_debug_commandPort](img/03_debug_commandPort.gif)
-
-
     2. if the python ptvsd debug module didn't initialize,it will import the module automatically and show the message for you.
-
     ![04_debug_ptvsd](img/04_debug_ptvsd.gif)
-
     3. if all the step had been done, congratulation ,you could use breakpoint to debug your python file in Maya.
-
     ![05_debug_breakpoint](img/05_debug_breakpoint.gif)
-
 
 ## Todolist
 
