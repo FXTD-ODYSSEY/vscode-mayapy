@@ -54,27 +54,7 @@ export class Logger {
 	}
 }
 
-function portIsOccupied(port) {
-	const server = net.createServer().listen(port,()=>{
-		Logger.info(`the server is runnint on port ${port}`)
-	})
-	return new Promise((resolve, reject) => {
-		
-		server.on('listening', () => {
-			Logger.info(`the server is runnint on port ${port}`)
-			server.close()
-			resolve(port)
-		}).on('error', (err) => {
-			if (err.code === 'EADDRINUSE') {
-				resolve(portIsOccupied(port + 1))//注意这句，如占用端口号+1
-				Logger.info(`this port ${port} is occupied.try another.`)
-			} else {
-				reject(err)
-			}
-		})
-	})
 
-}
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -201,18 +181,20 @@ if ${file_name} not in globals():
 else:
 	reload(${file_name})`;
 
-
-		// portIsOccupied(port).then(() => {
-		// 	Logger.info(`complete`)
-		// })
-
-		let socket = net.createConnection(port,hostname).on("error", (e) => {
-			socket.destroy()
-			Logger.info(`error : ${e.code}`)
-			Logger.info(`connect fail`)
-		}).on("connect",()=>{
-			Logger.info(`the server is runnint on port ${port}`)
+		let pythonExt = vscode.extensions.getExtension('ms-python.python');
+		let api = pythonExt.exports;
+		api.debug.getRemoteLauncherCommand(hostname,port,false).then((param)=>{
+			Logger.info(`param : ${param}`)
+			Logger.info(`param : ${Object.keys(param)}`)
 		})
+
+		// let socket = net.createConnection(port,hostname).on("error", (e) => {
+		// 	socket.destroy()
+		// 	Logger.info(`error : ${e.code}`)
+		// 	Logger.info(`connect fail`)
+		// }).on("connect",()=>{
+		// 	Logger.info(`the server is runnint on port ${port}`)
+		// })
 
 		// // 创建服务并监听该端口
 		// let server = net.createServer().listen(port)
