@@ -11,3 +11,4 @@ vsc-extension-quickstart.md
 scrap
 python
 python/maya/.mypy_cache
+*.vsix
