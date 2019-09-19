@@ -2,7 +2,7 @@
 	"name": "mayapy",
 	"displayName": "MayaPy",
 	"description": "Better Python Intellisense and Debugging for Autodesk Maya",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"publisher": "FXTD-Odyssey",
 	"author": {
 		"name": "FXTD-Odyssey",
