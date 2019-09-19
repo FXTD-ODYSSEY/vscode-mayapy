@@ -2,7 +2,7 @@
 	"name": "mayapy",
 	"displayName": "MayaPy",
 	"description": "Better Python Intellisense and Debugging for Autodesk Maya",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"publisher": "FXTD-Odyssey",
 	"author": {
 		"name": "FXTD-Odyssey",
@@ -71,10 +71,10 @@
 				"configurationAttributes": {
 					"attach": {
 						"properties": {
-							"MayaDebugMode": {
-								"type": "boolean",
-								"description": "Mayapy Debugger unique attribute",
-								"default": true
+							"MayaDebugFile": {
+								"type": "string",
+								"description": "Mayapy Debugger file path",
+								"default": "^\"\\${file}\""
 							}
 						}
 					}
@@ -99,7 +99,7 @@
 									"remoteRoot": "^\"\\${fileDirname}\""
 								}
 							],
-							"MayaDebugMode": true
+							"MayaDebugFile": "^\"\\${file}\""
 						}
 					}
 				]
@@ -135,12 +135,6 @@
 					"command": "mayapy.debugPythonFile",
 					"when": "editorTextFocus && editorLangId == 'python'",
 					"group": "navigation"
-				}
-			],
-			"commandPalette": [
-				{
-					"command": "mayapy.debugPythonFile",
-					"when": "false"
 				}
 			]
 		}

@@ -10,14 +10,13 @@
             "name": "Maya Python Debugger : Remote Attach",
             "port": 5678,
             "host": "localhost",
-            "MayaDebugMode": true,
             "pathMappings": [
                 {
                     "localRoot": "${fileDirname}",
                     "remoteRoot": "${fileDirname}"
                 }
-            ]
-        }
-       
+            ],
+            "MayaDebugFile": "${file}"
+        },
     ]
 }

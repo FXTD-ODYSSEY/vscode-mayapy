@@ -13,4 +13,4 @@ for cv in circle.cv:
 
 pm.delete(circle)
 
-print ("test")
+
