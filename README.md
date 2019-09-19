@@ -9,15 +9,15 @@ add the awesome Intellisense and Debugging feature. -->
 
 ---
 
-+ Add Python Intellisense for maya python module
++ **Add Python Intellisense for maya python module**
 
 ![01_module](img/01_module.gif)
 
-+ Display more information without searching for document 
++ **Display more module information and link the document directly** 
 
 ![02_link](img/02_link.gif)
 
-+ Integrate the python debugger that allow you set the breakpoint to test the code
++ **Integrate the python debugger that allow you set the breakpoint to test the code in Maya**
 
     1. right click the menu item `Debug Current Python File to Maya `, if you didn't activate the command Port in Maya,it will tell you the mel command to activate it.
     
@@ -39,7 +39,17 @@ add the awesome Intellisense and Debugging feature. -->
 
 ### Module Intellisense Feature
 
-> Intellisense feature is completely base on the [vscode python extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python) completion feature  
+> Intellisense feature is completely base on the [vscode python extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python) autocompletion feature.   
+> when you activate the extension , it will add the completion path to the setting.json `python.autoComplete.extraPaths` attribute
+
+![07_python_extrapath](img/07_python_extrapath.jpg)
+
+> By the way, I recommend you enable Jedi for performance issue temporarily.   
+> Current Python Language Server is pretty slow when you try to pop up the autocompletion list.    
+> Even so, Jedi also may not the perfect solution , you could check this [issue](https://github.com/davidhalter/jedi/issues/843).
+
+![08_jedi_enable](img/08_jedi_enable.jpg)
+
 > The origin completion python code came from the [Maya developer center](https://www.autodesk.com/developer-network/platform-technologies/maya) devkit  
 > devkit path : `devkitBase\devkit\other\pymel\extras\completion\py`
 

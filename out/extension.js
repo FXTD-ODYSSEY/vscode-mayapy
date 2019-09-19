@@ -139,11 +139,12 @@ current_directory = r"${fileDirname}"
 if current_directory not in sys.path:
 	sys.path.insert(0,current_directory)
 
+print("Mayapy Python Debugger : debug ${file_name} module\\n")
 if '${file_name}' not in globals():
 	import ${file_name}
 else:
 	reload(${file_name})
-print("Mayapy Python Debugger : debug ${file_name} module\\n")`;
+`;
         let activeDebugSession = vscode.debug.activeDebugSession;
         // NOTE 检查当前 Debug 状态
         if (activeDebugSession) {
