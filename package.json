@@ -1,8 +1,8 @@
 {
 	"name": "mayapy",
 	"displayName": "MayaPy",
-	"description": "Better Python intellisense and debugging for autodesk Maya",
-	"version": "1.0.1",
+	"description": "Better Python Intellisense and Debugging for Autodesk Maya",
+	"version": "1.0.2",
 	"publisher": "FXTD-Odyssey",
 	"author": {
 		"name": "FXTD-Odyssey",
@@ -61,7 +61,7 @@
 		"commands": [
 			{
 				"command": "mayapy.debugPythonFile",
-				"title": "Debug Current Python File in Maya",
+				"title": "Debug Current Python File to Maya",
 				"category": "Maya"
 			}
 		],

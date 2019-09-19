@@ -138,7 +138,7 @@ if ptvsd_module not in sys.path:
 
 import ptvsd
 ptvsd.enable_attach(("${hostname}",${port}))
-print("Mayapy Python Debugger : ptvsd module ready\n")`;
+print("Mayapy Python Debugger : ptvsd module ready\\n")`;
 
 		const run_code: string = `
 current_directory = r"${fileDirname}"
@@ -149,7 +149,7 @@ if '${file_name}' not in globals():
 	import ${file_name}
 else:
 	reload(${file_name})
-print("Mayapy Python Debugger : debug ${file_name} module\n")`;
+print("Mayapy Python Debugger : debug ${file_name} module\\n")`;
 
 
 		let activeDebugSession = vscode.debug.activeDebugSession
@@ -228,8 +228,8 @@ print("Mayapy Python Debugger : debug ${file_name} module\n")`;
 			maya_socket.destroy()
 			// NOTE 端口未开启 提示错误
 			Logger.error(`
-			Unable to connect to port ${mayaport} on Host ${mayahost} in Maya
-			Please run the mel command below in the maya script editor \n\n
+			Unable to connect to port localhost on Host 7001 in Maya
+			Please run the mel command in the maya script editor ↓↓↓
 			
 			commandPort -n "${mayahost}:${mayaport}" -stp "mel" -echoOutput;
 
